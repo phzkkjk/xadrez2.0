@@ -6,7 +6,7 @@ body {
     padding: 0;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centraliza o conteúdo horizontalmente */
+    align-items: center; 
     min-height: 100vh;
 }
 
@@ -28,7 +28,7 @@ header {
     width: 90%;
 }
 
-/* Tabuleiro Centralizado (tamanho formal 600px definido no HTML) */
+/* Tabuleiro com tamanho e sombra formais */
 .chessboard {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
     border-radius: 5px;
@@ -40,7 +40,7 @@ header {
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     width: 300px;
-    min-height: 400px; /* Para alinhar com o tabuleiro */
+    min-height: 400px; 
 }
 
 .game-status {
@@ -77,7 +77,7 @@ header {
 }
 
 footer {
-    margin-top: auto; /* Empurra o rodapé para baixo */
+    margin-top: auto; 
     padding: 10px 0;
     width: 100%;
     text-align: center;
@@ -85,14 +85,14 @@ footer {
     font-size: 0.8em;
 }
 
-/* Garante que o tabuleiro se ajuste em telas pequenas */
+/* Responsividade */
 @media (max-width: 900px) {
     .game-container {
         flex-direction: column;
         align-items: center;
     }
     .chessboard {
-        width: 90vw !important; /* Ajusta o tamanho do tabuleiro na tela */
+        width: 90vw !important; 
         height: 90vw;
     }
 }

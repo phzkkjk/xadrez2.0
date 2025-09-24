@@ -4,10 +4,10 @@
 var board = null;
 var game = new Chess(); 
 var $status = $('#status');
-var AI_LEVEL = 3; // Nível de dificuldade: 3 é um bom equilíbrio entre inteligência e velocidade.
-var isAITurn = false; // Flag para prevenir movimentos do jogador durante o turno da IA
+var AI_LEVEL = 3; // Nível de dificuldade da máquina (IA)
+var isAITurn = false; // Bloqueia o jogador durante o cálculo da IA
 
-// Peso das peças para a função de avaliação da IA (em centi-peões)
+// Peso das peças para a função de avaliação da IA
 var PIECE_VALUES = {
     'p': 100, 
     'n': 320, 
@@ -21,13 +21,8 @@ var PIECE_VALUES = {
 // 2. LÓGICA DA INTELIGÊNCIA ARTIFICIAL (IA) - ALGORITMO NEGAMAX
 // =================================================================
 
-/**
- * Avalia a posição atual do tabuleiro para determinar a vantagem.
- * @returns {number} A pontuação atual (positivo = Brancas melhor, negativo = Pretas melhor).
- */
 var evaluateBoard = function (game) {
     var score = 0;
-    // Utiliza game.board() que retorna a matriz 8x8 da posição
     game.board().forEach(function (row) {
         row.forEach(function (piece) {
             if (piece) {
@@ -40,13 +35,7 @@ var evaluateBoard = function (game) {
     return score;
 };
 
-/**
- * Algoritmo NegaMax. Retorna a melhor pontuação possível para o lado que está a mover.
- * @param {number} depth - Profundidade de busca.
- * @returns {number} - A melhor pontuação na profundidade atual.
- */
 var negaMax = function (depth, game) {
-    // Caso base: Se a profundidade for 0, retorna a avaliação da posição
     if (depth === 0) {
         // Retorna a pontuação NEGADA se for a vez do adversário
         return (game.turn() === 'w') ? -evaluateBoard(game) : evaluateBoard(game);
@@ -54,13 +43,9 @@ var negaMax = function (depth, game) {
 
     var possibleMoves = game.moves({ verbose: true });
     
-    // Se não houver movimentos legais (xeque-mate ou empate)
     if (possibleMoves.length === 0) {
-        // Se for xeque-mate, a pontuação deve ser muito ruim
-        if (game.in_checkmate()) {
-            return (game.turn() === 'w') ? -200000 : 200000;
-        }
-        // Se for empate, a pontuação é 0
+        // Pontuação de xeque-mate ou empate
+        if (game.in_checkmate()) return (game.turn() === 'w') ? -200000 : 200000;
         return 0; 
     }
 
@@ -70,10 +55,9 @@ var negaMax = function (depth, game) {
         var move = possibleMoves[i];
         game.move(move);
 
-        // Chamada recursiva: o valor é negado, pois inverte a perspectiva
-        var score = -negaMax(depth - 1, game);
+        var score = -negaMax(depth - 1, game); 
         
-        game.undo(); // Desfaz o movimento
+        game.undo(); // Desfaz o movimento (fundamental!)
 
         if (score > maxScore) {
             maxScore = score;
@@ -82,9 +66,6 @@ var negaMax = function (depth, game) {
     return maxScore;
 };
 
-/**
- * Calcula e executa o melhor movimento para a IA (Pretas).
- */
 var calculateBestMove = function () {
     var possibleMoves = game.moves({ verbose: true });
     if (possibleMoves.length === 0) return null;
@@ -92,7 +73,6 @@ var calculateBestMove = function () {
     var bestMove = null;
     var bestScore = -Infinity;
 
-    // Itera e usa o NegaMax para avaliar cada movimento
     for (var i = 0; i < possibleMoves.length; i++) {
         var move = possibleMoves[i];
         game.move(move);
@@ -100,7 +80,7 @@ var calculateBestMove = function () {
         // Chamada do NegaMax. O score é negado. 
         var score = -negaMax(AI_LEVEL - 1, game); 
 
-        game.undo(); // Desfaz o movimento
+        game.undo(); 
 
         if (score > bestScore) {
             bestScore = score;
@@ -118,7 +98,7 @@ var makeAIMove = function() {
     isAITurn = true;
     $status.html('É a vez de **Pretas** (Máquina pensando...)');
     
-    // Usa setTimeout para permitir que a UI se atualize antes de iniciar o cálculo
+    // Pequeno delay para a UI atualizar e evitar travamento
     window.setTimeout(function() {
         var move = calculateBestMove();
 
@@ -131,35 +111,32 @@ var makeAIMove = function() {
     }, 100); 
 };
 
-// Chamado quando o jogador solta uma peça
+// Movimento do Jogador (Brancas)
 var onDrop = function(source, target) {
-    // Tenta fazer o movimento
     var move = game.move({
         from: source,
         to: target,
-        promotion: 'q' // Simplifica a promoção para Rainha
+        promotion: 'q' 
     });
 
-    // Se o movimento for ilegal ou se for o turno da IA
+    // Se o movimento for ilegal ou for turno da IA, volta a peça
     if (move === null || isAITurn) return 'snapback';
 
     updateStatus();
 
-    // Se o jogo não acabou, é a vez da IA (Pretas)
+    // Se o jogo não acabou, chama a IA
     if (!game.game_over()) {
-        window.setTimeout(makeAIMove, 300); // Pequeno delay
+        window.setTimeout(makeAIMove, 300); 
     }
 };
 
-// Define quais peças podem ser arrastadas (só as Brancas e se não for turno da IA)
+// Restringe o arrastar de peças (só Brancas e só no turno do jogador)
 var onDragStart = function (source, piece) {
-    // Não permite arrastar se o jogo acabou, se a peça for preta, ou se for turno da IA
     if (game.game_over() || piece.search(/^b/) !== -1 || isAITurn) {
         return false;
     }
 };
 
-// Atualiza o texto de status do jogo
 var updateStatus = function() {
     var status = '';
     var moveColor = (game.turn() === 'w') ? 'Brancas' : 'Pretas';
@@ -181,10 +158,9 @@ var updateStatus = function() {
     $status.html(status);
 };
 
-// Função para iniciar um novo jogo
 var resetGame = function() {
-    game.reset(); // Reinicia o estado do jogo chess.js
-    board.position('start'); // Coloca o tabuleiro na posição inicial
+    game.reset(); 
+    board.position('start'); 
     updateStatus();
     isAITurn = false;
 };
@@ -194,12 +170,11 @@ var resetGame = function() {
 // =================================================================
 var cfg = {
     draggable: true,
-    position: 'start', // Peças em preto e branco já carregadas
+    position: 'start', 
     onDrop: onDrop,
     onDragStart: onDragStart 
 };
 
-// Inicializa o tabuleiro e o estado
 board = Chessboard('board', cfg);
 updateStatus(); 
 $('#reset-button').on('click', resetGame);

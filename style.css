@@ -1,18 +1,98 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: center; /* Centraliza o conteúdo horizontalmente */
+    min-height: 100vh;
+}
+
+header {
+    background-color: #4a4a4a;
+    color: white;
+    padding: 15px 0;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.game-container {
+    display: flex;
+    justify-content: center; /* Centraliza o tabuleiro e o painel de info */
+    gap: 40px;
+    padding: 40px 20px;
+    max-width: 1200px;
+    width: 90%;
+}
+
+/* Tabuleiro Centralizado (tamanho formal 600px definido no HTML) */
+.chessboard {
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+}
+
+.info-panel {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    min-height: 400px; /* Para alinhar com o tabuleiro */
+}
+
+.game-status {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #007bff;
+    margin-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.info-panel h2 {
+    color: #4a4a4a;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 5px;
     margin-top: 20px;
 }
 
-#status {
-    margin-top: 15px;
-    font-size: 1.2em;
-    font-weight: bold;
+#reset-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    width: 100%;
+    font-size: 1em;
+    transition: background-color 0.3s;
 }
 
-/* Opcional: Ajustes para o chessboard.js se necessário */
-.square-55d63 {
-    /* Por exemplo, ajustar cores das casas se quiser */
+#reset-button:hover {
+    background-color: #218838;
+}
+
+footer {
+    margin-top: auto; /* Empurra o rodapé para baixo */
+    padding: 10px 0;
+    width: 100%;
+    text-align: center;
+    background-color: #e9ecef;
+    font-size: 0.8em;
+}
+
+/* Garante que o tabuleiro se ajuste em telas pequenas */
+@media (max-width: 900px) {
+    .game-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    .chessboard {
+        width: 90vw !important; /* Ajusta o tamanho do tabuleiro na tela */
+        height: 90vw;
+    }
 }

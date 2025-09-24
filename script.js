@@ -178,3 +178,30 @@ var cfg = {
 board = Chessboard('board', cfg);
 updateStatus(); 
 $('#reset-button').on('click', resetGame);
+
+// 4. INICIALIZAÇÃO DO TABULEIRO E EVENTOS
+// =================================================================
+var cfg = {
+    draggable: true,
+    // ESSA LINHA COLOCA TODAS AS PEÇAS NO TABULEIRO
+    position: 'start', 
+    onDrop: onDrop,
+    onDragStart: onDragStart 
+};
+
+// Inicializa a interface gráfica, desenhando o tabuleiro com as peças
+board = Chessboard('board', cfg);
+
+// Se quiser garantir que a lógica do jogo (chess.js) também esteja no início:
+game.reset();
+
+updateStatus(); 
+$('#reset-button').on('click', resetGame);
+
+// A função 'resetGame' (para Novo Jogo) também usa isso:
+var resetGame = function() {
+    game.reset();             // Reseta o motor lógico do jogo
+    board.position('start');  // Coloca as peças no tabuleiro
+    updateStatus();
+    isAITurn = false;
+};
